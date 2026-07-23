@@ -1,0 +1,521 @@
+/* ============================================================
+   1) DESIGN TOKENS
+   All colors, spacing, and timing live here as CSS variables.
+   Changing the whole "feel" of the site only requires editing
+   the values in this one block.
+============================================================ */
+:root {
+  /* --- Palette: soft romantic pinks/reds/pastels --- */
+  --color-bg-1: #fff0f3;      /* pastel blush pink   */
+  --color-bg-2: #ffd9e3;      /* pastel rose pink    */
+  --color-bg-3: #ffe8ec;      /* pastel cream-pink   */
+  --color-primary: #ff4d6d;   /* main romantic red   */
+  --color-primary-dark: #e63955;
+  --color-accent: #ff85a1;    /* lighter pink accent */
+  --color-text: #57323c;      /* warm dark plum text */
+  --color-text-soft: #8a5b68;
+  --color-white: #ffffff;
+
+  /* --- Glassmorphism card --- */
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-blur: 16px;
+
+  /* --- Spacing / radius --- */
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-pill: 999px;
+  --gap: 1rem;
+
+  /* --- Motion --- */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ============================================================
+   2) RESET & BASE
+============================================================ */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", "Poppins", system-ui, -apple-system, sans-serif;
+  color: var(--color-text);
+  overflow-x: hidden;
+  /* Animated pastel gradient background that slowly shifts */
+  background: linear-gradient(-45deg, var(--color-bg-1), var(--color-bg-2), var(--color-bg-3), var(--color-bg-1));
+  background-size: 400% 400%;
+  animation: gradientShift 16s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Custom heart-shaped cursor on desktop only (hidden on touch devices
+   via the media query near the bottom of this file) */
+body {
+  cursor: default;
+}
+
+h1, h2 {
+  font-family: "Georgia", "Segoe UI", serif;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); }
+h2 { font-size: clamp(1.4rem, 3.5vw, 2rem); }
+
+p { margin: 0.4rem 0; }
+
+.subtitle {
+  color: var(--color-text-soft);
+  font-size: 1rem;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ============================================================
+   3) BACKGROUND HEARTS CANVAS
+   Sits behind every screen; JS draws slow-floating hearts on it.
+============================================================ */
+#heartsCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   4) LOADING SCREEN
+============================================================ */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, var(--color-bg-2), var(--color-bg-1));
+  transition: opacity var(--transition-medium), visibility var(--transition-medium);
+}
+
+.loading-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loading-heart {
+  font-size: 3rem;
+  animation: heartbeat 1.1s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  25%      { transform: scale(1.15); }
+  40%      { transform: scale(0.95); }
+  60%      { transform: scale(1.1); }
+}
+
+.loading-text {
+  color: var(--color-text-soft);
+  letter-spacing: 0.03em;
+}
+
+/* ============================================================
+   5) APP LAYOUT + SCREEN TRANSITIONS
+============================================================ */
+.app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.app.hidden {
+  display: none;
+}
+
+/* Each "screen" is stacked in the same grid cell; only the
+   active one is visible/interactive, and it fades + slides in. */
+.screen {
+  display: none;
+  width: 100%;
+  max-width: 480px;
+  animation: fadeSlideIn var(--transition-medium) both;
+}
+
+.screen.active {
+  display: block;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ============================================================
+   6) GLASSMORPHISM CARD
+============================================================ */
+.card {
+  padding: 2rem 1.75rem;
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: 0 8px 32px rgba(230, 57, 85, 0.15);
+}
+
+/* ============================================================
+   7) BUTTON ARENA (Screen 1 Yes/No game)
+   A fixed-height relative box the "No" button can teleport
+   around inside of, without breaking the page layout.
+============================================================ */
+.button-arena {
+  position: relative;
+  height: 160px;
+  margin-top: 1.75rem;
+}
+
+.btn {
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 0.85rem 1.9rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn-yes {
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  transform: translateX(calc(-50% - 60px));
+  background: var(--color-primary);
+  color: var(--color-white);
+  box-shadow: 0 4px 18px rgba(255, 77, 109, 0.4);
+  /* Sits above the No button in the stacking order, so if the two
+     ever visually overlap (No teleports onto Yes's spot), clicks
+     still land on Yes instead of the button on top in DOM order. */
+  z-index: 2;
+}
+
+.btn-yes.grow {
+  animation: yesPulse 0.9s ease-in-out infinite;
+}
+
+@keyframes yesPulse {
+  0%, 100% { box-shadow: 0 4px 18px rgba(255, 77, 109, 0.4); }
+  50%      { box-shadow: 0 4px 32px rgba(255, 77, 109, 0.75); }
+}
+
+.btn-no {
+  position: absolute;
+  left: 50%;
+  top: 20px;
+  transform: translateX(calc(-50% + 60px));
+  background: var(--color-white);
+  color: var(--color-text);
+  border: 1px solid var(--color-accent);
+  z-index: 1;
+  /* The "escape" motion is smooth thanks to this transition on
+     top/left, which JS changes every time the mouse gets close. */
+  transition: top 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+  padding: 0.9rem 2.2rem;
+  margin-top: 1.25rem;
+  box-shadow: 0 4px 18px rgba(255, 77, 109, 0.35);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-dark);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ============================================================
+   8) SUCCESS / POP ANIMATIONS (Screens 2 & 5)
+============================================================ */
+.pop-heart {
+  font-size: 3.2rem;
+  animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.see-you-soon {
+  margin-top: 1rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  animation: fadeSlideIn 0.4s ease both;
+}
+
+/* ============================================================
+   9) FORM FIELDS (date, time, food input)
+============================================================ */
+.field {
+  text-align: left;
+  margin-top: 1.1rem;
+}
+
+.field label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-soft);
+  margin-bottom: 0.35rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid rgba(255, 133, 161, 0.5);
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.2);
+}
+
+.warning {
+  color: var(--color-primary-dark);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 0.6rem;
+  animation: shake 0.4s ease;
+}
+
+.warning.hidden {
+  display: none;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-6px); }
+  75%      { transform: translateX(6px); }
+}
+
+/* ============================================================
+   10) SUGGESTION CHIPS (Screen 4)
+============================================================ */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.chip {
+  border: 1.5px solid rgba(255, 133, 161, 0.5);
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-pill);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.chip:hover {
+  background: var(--color-accent);
+  color: var(--color-white);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   10.5) EMAIL STATUS MESSAGES (loading / success / error)
+   One shared element whose color/icon changes based on which
+   "state" class JS adds to it — only one is shown at a time.
+============================================================ */
+.email-status {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-md);
+}
+
+.email-status.state-loading {
+  color: var(--color-text-soft);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Small spinning dot shown next to the "sending..." text */
+.email-status.state-loading::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 0.5rem;
+  border: 2px solid var(--color-accent);
+  border-top-color: transparent;
+  border-radius: 50%;
+  vertical-align: middle;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.email-status.state-success {
+  color: #2f7a4d;
+  background: rgba(196, 255, 213, 0.6);
+}
+
+.email-status.state-error {
+  color: var(--color-primary-dark);
+  background: rgba(255, 214, 221, 0.6);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-accent);
+  margin-top: 0.75rem;
+}
+
+.btn-secondary:hover {
+  background: var(--color-accent);
+  color: var(--color-white);
+}
+
+.email-error-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  color: var(--color-text-soft);
+  text-decoration: underline;
+  padding: 0.3rem;
+  font-size: 0.85rem;
+  margin-top: 0;
+}
+
+.btn-text:hover {
+  color: var(--color-primary-dark);
+}
+
+/* ============================================================
+   11) CONFETTI LAYER
+============================================================ */
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -10px;
+  width: 8px;
+  height: 14px;
+  opacity: 0.9;
+  animation-name: confettiFall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+
+@keyframes confettiFall {
+  to {
+    transform: translateY(110vh) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   12) UTILITY
+============================================================ */
+.hidden {
+  display: none !important;
+}
+
+/* Visible keyboard focus for accessibility, on every interactive element */
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   13) RESPONSIVE
+============================================================ */
+@media (max-width: 480px) {
+  .card {
+    padding: 1.5rem 1.1rem;
+  }
+  .button-arena {
+    height: 190px;
+  }
+}
+
+/* Custom cursor: only on devices with a real mouse (not touch).
+   Drawn as a small red heart path so it renders reliably everywhere
+   (an emoji glyph inside a data-URI SVG is not reliable cross-browser). */
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: url('data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 32 32"><path fill="%23ff4d6d" stroke="white" stroke-width="1.5" d="M16 28 C6 20 2 14 2 9 C2 4 6 2 9 2 C12 2 15 4 16 7 C17 4 20 2 23 2 C26 2 30 4 30 9 C30 14 26 20 16 28 Z"/></svg>') 13 13, auto;
+  }
+}
+
+/* Respect users who prefer reduced motion: calm everything down */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

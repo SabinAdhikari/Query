@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Will You Go On A Date With Me? ❤️</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ======================================================
+       This <canvas> sits behind everything and draws the
+       soft floating hearts in the background. JS draws on it.
+  ======================================================= -->
+  <canvas id="heartsCanvas"></canvas>
+
+  <!-- ======================================================
+       LOADING SCREEN
+       Shown for ~2 seconds while the "page" pretends to load.
+       Gives the site a nice, intentional first impression.
+  ======================================================= -->
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loading-heart">❤️</div>
+    <p class="loading-text">Getting things ready...</p>
+  </div>
+
+  <!-- ======================================================
+       MAIN APP WRAPPER
+       Every "screen" is a <section class="screen">.
+       Only one screen has the "active" class at a time;
+       CSS + JS handle fading between them.
+  ======================================================= -->
+  <main id="app" class="app hidden">
+
+    <!-- ---------- SCREEN 1: The Question ---------- -->
+    <section id="screen1" class="screen active">
+      <div class="card glass">
+        <h1 class="typewriter" id="screen1Heading">Wanna go on a date with me? ❤️</h1>
+
+        <!-- This wrapper gives the "No" button a boxed area
+             it is allowed to move around inside of. -->
+        <div class="button-arena" id="buttonArena">
+          <button id="yesBtn" class="btn btn-yes" type="button">Yes ❤️</button>
+          <button id="noBtn" class="btn btn-no" type="button">No 🙈</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- SCREEN 2: You said Yes ---------- -->
+    <section id="screen2" class="screen">
+      <div class="card glass">
+        <div class="pop-heart">💖</div>
+        <h2>You said YES ❤️</h2>
+        <p class="subtitle">I was actually preparing myself for you to say "No"... 😅</p>
+        <button id="okBtn" class="btn btn-primary" type="button">Okay 😂</button>
+      </div>
+    </section>
+
+    <!-- ---------- SCREEN 3: Date + Time ---------- -->
+    <section id="screen3" class="screen">
+      <div class="card glass">
+        <h2>So... When are you free? 😊</h2>
+
+        <div class="field">
+          <label for="dateInput">Pick a Date</label>
+          <input type="date" id="dateInput" class="input" />
+        </div>
+
+        <div class="field">
+          <label for="timeInput">Pick a Time</label>
+          <input type="time" id="timeInput" class="input" />
+        </div>
+
+        <!-- Hidden warning message, shown only if validation fails -->
+        <p id="dateTimeWarning" class="warning hidden" role="alert">
+          Please pick both a date and a time first! ⏰
+        </p>
+
+        <button id="setDateBtn" class="btn btn-primary" type="button" disabled>
+          Set the Date ❤️
+        </button>
+      </div>
+    </section>
+
+    <!-- ---------- SCREEN 4: Food / Vibe choice ---------- -->
+    <section id="screen4" class="screen">
+      <div class="card glass">
+        <h2>One more thing...</h2>
+        <p class="subtitle">What's your vibe for our date?</p>
+
+        <div class="field">
+          <input
+            type="text"
+            id="foodInput"
+            class="input"
+            placeholder="Pizza? Coffee? Momos? Ice cream? Sushi..."
+            maxlength="40"
+          />
+        </div>
+
+        <!-- Suggestion chips: clicking one fills the text box above -->
+        <div class="chips" id="chipContainer">
+          <button type="button" class="chip" data-food="Pizza 🍕">🍕 Pizza</button>
+          <button type="button" class="chip" data-food="Coffee ☕">☕ Coffee</button>
+          <button type="button" class="chip" data-food="Burger 🍔">🍔 Burger</button>
+          <button type="button" class="chip" data-food="Ramen 🍜">🍜 Ramen</button>
+          <button type="button" class="chip" data-food="Sushi 🍣">🍣 Sushi</button>
+          <button type="button" class="chip" data-food="Fries 🍟">🍟 Fries</button>
+          <button type="button" class="chip" data-food="Ice Cream 🍦">🍦 Ice Cream</button>
+          <button type="button" class="chip" data-food="Momos 🥟">🥟 Momos</button>
+        </div>
+
+        <p id="foodWarning" class="warning hidden" role="alert">
+          Tell me what you're craving! 🍽️
+        </p>
+
+        <button id="continueBtn" class="btn btn-primary" type="button">Continue ❤️</button>
+
+        <!-- Feedback area for the EmailJS send: shows one of
+             loading / success / error, toggled by JS. Kept as a
+             single element with a "state" class so only one
+             message shows at a time. -->
+        <p id="emailStatus" class="email-status hidden" role="status" aria-live="polite"></p>
+
+        <!-- Only shown if sending the email fails, so the user can
+             try again without retyping anything, or move on anyway. -->
+        <div id="emailErrorActions" class="email-error-actions hidden">
+          <button id="retryEmailBtn" class="btn btn-secondary" type="button">
+            Try Sending Again
+          </button>
+          <button id="skipEmailBtn" class="btn btn-text" type="button">
+            Continue without emailing
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- FINAL SCREEN: Confirmation ---------- -->
+    <section id="screen5" class="screen">
+      <div class="card glass">
+        <div class="pop-heart">🎉</div>
+        <h2>I'm glad you didn't say "No." ❤️</h2>
+        <p class="subtitle">
+          Be ready on <strong id="finalDate"></strong> at <strong id="finalTime"></strong>.
+        </p>
+        <p class="subtitle">We'll grab some <strong id="finalFood"></strong> together 😄</p>
+
+        <button id="cantWaitBtn" class="btn btn-primary" type="button">Can't Wait ❤️</button>
+
+        <!-- This message appears after clicking "Can't Wait", replacing the button -->
+        <p id="seeYouSoon" class="see-you-soon hidden">See you soon 😊❤️</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Confetti pieces get injected here by JS -->
+  <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+
+  <!-- EmailJS SDK: lets client-side JS send an email without a backend server -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- Your personal EmailJS credentials live in config.js, kept separate
+       from script.js so you never have to touch the app logic to set them up -->
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
