@@ -6,13 +6,19 @@
 ============================================================ */
 :root {
   /* --- Palette: soft romantic pinks/reds/pastels --- */
-  --color-bg-1: #fff0f3;      /* pastel blush pink   */
-  --color-bg-2: #ffd9e3;      /* pastel rose pink    */
-  --color-bg-3: #ffe8ec;      /* pastel cream-pink   */
-  --color-primary: #ff4d6d;   /* main romantic red   */
+  --color-bg-1: #fff0f3;
+  /* pastel blush pink   */
+  --color-bg-2: #ffd9e3;
+  /* pastel rose pink    */
+  --color-bg-3: #ffe8ec;
+  /* pastel cream-pink   */
+  --color-primary: #ff4d6d;
+  /* main romantic red   */
   --color-primary-dark: #e63955;
-  --color-accent: #ff85a1;    /* lighter pink accent */
-  --color-text: #57323c;      /* warm dark plum text */
+  --color-accent: #ff85a1;
+  /* lighter pink accent */
+  --color-text: #57323c;
+  /* warm dark plum text */
   --color-text-soft: #8a5b68;
   --color-white: #ffffff;
 
@@ -39,7 +45,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -53,9 +60,17 @@ html, body {
 }
 
 @keyframes gradientShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* Custom heart-shaped cursor on desktop only (hidden on touch devices
@@ -64,16 +79,24 @@ body {
   cursor: default;
 }
 
-h1, h2 {
+h1,
+h2 {
   font-family: "Georgia", "Segoe UI", serif;
   margin: 0 0 0.5rem 0;
   line-height: 1.3;
 }
 
-h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); }
-h2 { font-size: clamp(1.4rem, 3.5vw, 2rem); }
+h1 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+}
 
-p { margin: 0.4rem 0; }
+h2 {
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+}
+
+p {
+  margin: 0.4rem 0;
+}
 
 .subtitle {
   color: var(--color-text-soft);
@@ -125,10 +148,23 @@ button {
 }
 
 @keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  25%      { transform: scale(1.15); }
-  40%      { transform: scale(0.95); }
-  60%      { transform: scale(1.1); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform: scale(1.15);
+  }
+
+  40% {
+    transform: scale(0.95);
+  }
+
+  60% {
+    transform: scale(1.1);
+  }
 }
 
 .loading-text {
@@ -167,8 +203,15 @@ button {
 }
 
 @keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(24px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* ============================================================
@@ -232,8 +275,15 @@ button {
 }
 
 @keyframes yesPulse {
-  0%, 100% { box-shadow: 0 4px 18px rgba(255, 77, 109, 0.4); }
-  50%      { box-shadow: 0 4px 32px rgba(255, 77, 109, 0.75); }
+
+  0%,
+  100% {
+    box-shadow: 0 4px 18px rgba(255, 77, 109, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 4px 32px rgba(255, 77, 109, 0.75);
+  }
 }
 
 .btn-no {
@@ -245,10 +295,12 @@ button {
   color: var(--color-text);
   border: 1px solid var(--color-accent);
   z-index: 1;
+  pointer-events: none;
+  user-select: none;
   /* The "escape" motion is smooth thanks to this transition on
      top/left, which JS changes every time the mouse gets close. */
   transition: top 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-              left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .btn-primary {
@@ -278,9 +330,19 @@ button {
 }
 
 @keyframes popIn {
-  0%   { transform: scale(0); opacity: 0; }
-  70%  { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  70% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .see-you-soon {
@@ -336,9 +398,19 @@ button {
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25%      { transform: translateX(-6px); }
-  75%      { transform: translateX(6px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-6px);
+  }
+
+  75% {
+    transform: translateX(6px);
+  }
 }
 
 /* ============================================================
@@ -401,7 +473,9 @@ button {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .email-status.state-success {
@@ -497,6 +571,7 @@ input:focus-visible {
   .card {
     padding: 1.5rem 1.1rem;
   }
+
   .button-arena {
     height: 190px;
   }
@@ -513,7 +588,10 @@ input:focus-visible {
 
 /* Respect users who prefer reduced motion: calm everything down */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
